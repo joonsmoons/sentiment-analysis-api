@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from transformers import pipeline
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -18,16 +18,19 @@ app.add_middleware(
 )
 
 
-@app.get("/")
-async def read_root():
-    return {"Hello": "World"}
+@app.get("/api/v1/sentiment")
+async def analyze_sentiment(q: str):
+    """
+    Analyzes sentiment of the given text.
 
+    Parameters:
+    - q (str): Text to analyze sentiment for.
 
-@app.get("/api/v1/health")
-async def check_health():
-    return {"status": "healthy"}
-
-
-@app.get("/api/v1/sentiment/{text}")
-async def sentiment(text: str):
-    return sentiment_pipeline(text)[0]
+    Returns:
+    - dict: Sentiment analysis result.
+    """
+    try:
+        result = sentiment_pipeline(q)
+        return {"sentiment": result[0]}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
