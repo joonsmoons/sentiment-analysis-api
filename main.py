@@ -30,7 +30,6 @@ async def analyze_sentiment(q: str):
     - dict: Sentiment analysis result.
     """
     try:
-        result = sentiment_pipeline(q)
-        return {"sentiment": result[0]}
+        return sentiment_pipeline(q)[0]
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
